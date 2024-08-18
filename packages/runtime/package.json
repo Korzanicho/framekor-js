@@ -1,0 +1,28 @@
+{
+  "name": "framekor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/framekor.js",
+  "files": [
+    "dist/framekor.js"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build": "rollup -c",
+    "lint": "eslint src",
+    "test:run": "vitest run",
+    "prepack": "npm run build",
+    "lint:fix": "eslint --fix src"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "jsdom": "^24.0.0",
+    "rollup": "^4.17.0",
+    "rollup-plugin-cleanup": "^3.2.1",
+    "rollup-plugin-filesize": "^10.0.0",
+    "vitest": "^1.5.2"
+  }
+}

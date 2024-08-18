@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+
+	<title>My Todo's</title>
+
+	<link rel="stylesheet" href="./todos.css">
+	<script src="./todos.js" type="module"></script>
+</head>
+<body>
+	<div class="container">
+		<h1 class="text-center">My Todos</h1>
+		<div>
+			<div class="form-input">
+				<label for="todo-input" class="label">Enter a new todo:</label>
+				<input type="text" id="todo-input" placeholder="Think to do..."/>
+			</div>
+			<button
+				id="add-todo-btn"
+				class="btn"
+				disabled
+			>
+				Add
+			</button>
+		</div>
+		<ul id="todos-list"></ul>
+	</div>
+</body>
+</html>

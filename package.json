@@ -1,0 +1,16 @@
+{
+  "name": "framekor-project",
+  "version": "1.0.0",
+  "description": "Simply JavaScript framework",
+  "private": true,
+  "main": "index.js",
+  "workspaces": [
+    "packages/runtime"
+  ],
+  "scripts": {
+    "serve:examples": "npx http-server . -o ./examples"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
