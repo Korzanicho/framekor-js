@@ -27,7 +27,7 @@ export function setAttribute(el, name, value) {
   else el[name] = value;
 }
 
-export default function setAttributes(el, attrs) {
+export function setAttributes(el, attrs) {
   const { class: className, style, ...otherAttrs } = attrs;
 
   if (className) setClass(el, className);

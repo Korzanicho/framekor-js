@@ -1,4 +1,5 @@
-import {h, createApp, hString, hFragment} from 'https://unpkg.com/webkor@1';
+import {h, createApp, hString, hFragment} from 'https://unpkg.com/framekor@1.0.2';
+// import {h, createApp, hString, hFragment} from './framekor.js';
 
 const state = {
 	currentTodo: '',
@@ -7,7 +8,7 @@ const state = {
 		original: null,
 		edited: null
 	},
-	todos: ['Walk the dog, Water the plants']
+	todos: ['Walk the dog', 'Water the plants']
 }
 
 const reducers = {

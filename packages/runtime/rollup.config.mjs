@@ -5,7 +5,7 @@ export default {
   input: 'src/index.js',
   plugins: [cleanup()],
   output: {
-    file: 'dist/webkor.js',
+    file: 'dist/framekor.js',
     format: 'esm',
     plugins: [filesize()],
   },

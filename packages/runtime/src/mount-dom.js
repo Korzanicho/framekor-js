@@ -41,7 +41,7 @@ function createElementNode(vdom, parentEl) {
   parentEl.append(element);
 }
 
-export default function mountDOM(vdom, parentEl) {
+export function mountDOM(vdom, parentEl) {
   switch (vdom.type) {
     case DOM_TYPES.TEXT: {
       createTextNode(vdom, parentEl);

@@ -7,12 +7,12 @@ function removeTextNode(vdom) {
 }
 
 function removeElementNode(vdom) {
-  const { el, childres, listeners } = vdom;
+  const { el, children, listeners } = vdom;
 
   el.remove();
 
   // eslint-disable-next-line no-use-before-define
-  childres.forEach(destroyDOM);
+  children.forEach(destroyDOM);
 
   if (listeners) {
     removeEventListeners(listeners, el);
@@ -21,13 +21,13 @@ function removeElementNode(vdom) {
 }
 
 function removeFragmentNodes(vdom) {
-  const { childres } = vdom;
+  const { children } = vdom;
 
   // eslint-disable-next-line no-use-before-define
-  childres.forEach(destroyDOM);
+  children.forEach(destroyDOM);
 }
 
-export default function destroyDOM(vdom) {
+export function destroyDOM(vdom) {
   const { type } = vdom;
 
   switch (type) {
