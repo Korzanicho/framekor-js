@@ -9,6 +9,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "framekor": "^1.0.0"
+    "framekor": "^1.0.5"
   }
 }
