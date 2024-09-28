@@ -1,4 +1,5 @@
-import {h, createApp, hString, hFragment} from 'https://unpkg.com/webkor@1';
+// import {h, createApp, hString, hFragment} from 'https://unpkg.com/webkor@1';
+import {h, createApp, hString, hFragment} from './webkor.js';
 
 const state = {
 	currentTodo: '',

@@ -30,6 +30,22 @@ export function h(tag, props = {}, children = []) {
   };
 }
 
+export function extractChildren(vdom) {
+  if (vdom.children == null) return [];
+
+  const children = [];
+
+  for (const child of vdom.children) {
+    if (child.type === DOM_TYPES.FRAGMENT) {
+      children.push(...extractChildren(child, children));
+    } else {
+      children.push(child);
+    }
+  }
+
+  return children;
+}
+
 export function lipsum(paragraphsQuantity = 1) {
   const text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
   sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
@@ -38,20 +54,3 @@ export function lipsum(paragraphsQuantity = 1) {
 
   return hFragment(Array(paragraphsQuantity).fill(h('p', {}, [text])));
 }
-
-// Example:
-
-// hFragment([
-//   h('h1', { class: 'title' }, ['My counter']),
-//   h('div', { class: 'container' }, [
-//     h('button', {}, ['decrement']),
-//     h('span', {}, ['0']),
-//     h('button', {}, ['increment']),
-//   ]),
-// ]);
-
-// function MessageComponent (level, message) {
-//   return h('div', { class: `message message--${level}` }, [
-//     h('p', {}, [message]),
-//   ]);
-// }

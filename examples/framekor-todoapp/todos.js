@@ -1,5 +1,6 @@
-import {h, createApp, hString, hFragment} from 'https://unpkg.com/framekor@1.0.2';
-// import {h, createApp, hString, hFragment} from './framekor.js';
+// import {h, createApp, hString, hFragment} from 'https://unpkg.com/framekor@1.0.2';
+import {h, createApp, hString, hFragment} from './framekor.js';
+// import {h, createApp, hString, hFragment} from '../../packages/runtime/src/app.js';
 
 const state = {
 	currentTodo: '',
