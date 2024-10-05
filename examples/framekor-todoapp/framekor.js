@@ -480,10 +480,11 @@ function patchElement(oldVdom, newVdom) {
 		on: newEvents,
 		...newAttrs
 	} = newVdom.props;
+	const { listeners: oldListeners } = oldVdom;
 	patchAttrs(el, oldAttrs, newAttrs);
 	patchClasses(el, oldClass, newClass);
 	patchStyles(el, oldStyle, newStyle);
-	newVdom.listeners = patchEvents(el, oldEvents, newEvents);
+	newVdom.listeners = patchEvents(el, oldListeners, oldEvents, newEvents);
 }
 function patchAttrs(el, oldAttrs, newAttrs) {
 	const { added, removed, updated } = objectsDiff(oldAttrs, newAttrs);
