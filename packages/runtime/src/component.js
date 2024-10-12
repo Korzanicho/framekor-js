@@ -117,7 +117,7 @@ export function defineComponent({ render, state, ...methods }) {
 		}
 
 		#wireEventHandler(eventName, handler) {
-			this.#dispatcher.subscribe(eventName, (payload) => {
+			return this.#dispatcher.subscribe(eventName, (payload) => {
 				if (this.#parentComponent) {
 					handler.call(this.#parentComponent, payload);
 				} else {

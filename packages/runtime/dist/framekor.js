@@ -41,7 +41,7 @@ class ArrayWithOriginalIndices {
   #originalIndices = [];
   #equalsFn;
   constructor(array, equalsFn) {
-    this.#array = array;
+    this.#array = [...array];
     this.#originalIndices = array.map((_, i) => i);
     this.#equalsFn = equalsFn;
   }
@@ -740,7 +740,7 @@ function defineComponent({ render, state, ...methods }) {
 			);
 		}
 		#wireEventHandler(eventName, handler) {
-			this.#dispatcher.subscribe(eventName, (payload) => {
+			return this.#dispatcher.subscribe(eventName, (payload) => {
 				if (this.#parentComponent) {
 					handler.call(this.#parentComponent, payload);
 				} else {

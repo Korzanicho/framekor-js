@@ -57,7 +57,7 @@ class ArrayWithOriginalIndices {
   #equalsFn;
 
   constructor(array, equalsFn) {
-    this.#array = array;
+    this.#array = [...array];
     this.#originalIndices = array.map((_, i) => i);
     this.#equalsFn = equalsFn;
   }
