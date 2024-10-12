@@ -2,6 +2,7 @@
 import { DOM_TYPES } from './h';
 import { setAttributes } from './attributes';
 import { addEventListeners } from './events';
+import { extractPropsAndEvents } from './utils/props';
 
 function createTextNode(vdom, parentEl, index) {
   const { value } = vdom;
@@ -11,13 +12,13 @@ function createTextNode(vdom, parentEl, index) {
   insert(textNode, parentEl, index);
 }
 
-function createFragmentNodes(vdom, parentEl, index) {
+function createFragmentNodes(vdom, parentEl, index, hostComponent) {
   const { children } = vdom;
   // eslint-disable-next-line no-param-reassign
   vdom.el = parentEl;
 
   for (const child of children) {
-    mountDOM(child, parentEl, index)
+    mountDOM(child, parentEl, index ? index + i : null, hostComponent);
 
     if (index == null) {
       continue
@@ -33,29 +34,29 @@ function createFragmentNodes(vdom, parentEl, index) {
   }
 }
 
-function addProps(el, props, vdom) {
-  const { on: events, ...attrs } = props;
+function addProps(el, vdom, hostComponent) {
+  const { props: attrs, events } = extractPropsAndEvents(vdom);
   // eslint-disable-next-line no-param-reassign
-  vdom.listeners = addEventListeners(events, el);
+  vdom.listeners = addEventListeners(events, el, hostComponent);
   setAttributes(el, attrs);
 }
 
-function createElementNode(vdom, parentEl, index) {
-  const { tag, props, children } = vdom;
+function createElementNode(vdom, parentEl, index, hostComponent) {
+  const { tag, children } = vdom;
 
   const element = document.createElement(tag);
-  addProps(element, props, vdom);
+  addProps(element, vdom, hostComponent);
   // eslint-disable-next-line no-param-reassign
   vdom.el = element;
 
   children.forEach((child) => {
-    mountDOM(child, element);
+    mountDOM(child, element, null, hostComponent);
   });
 
   insert(element, parentEl, index);
 }
 
-export function mountDOM(vdom, parentEl, index) {
+export function mountDOM(vdom, parentEl, index, hostComponent = null) {
   switch (vdom.type) {
     case DOM_TYPES.TEXT: {
       createTextNode(vdom, parentEl, index);
@@ -63,12 +64,17 @@ export function mountDOM(vdom, parentEl, index) {
     }
 
     case DOM_TYPES.ELEMENT: {
-      createElementNode(vdom, parentEl, index);
+      createElementNode(vdom, parentEl, index, hostComponent);
       break;
     }
 
     case DOM_TYPES.FRAGMENT: {
-      createFragmentNodes(vdom, parentEl, index);
+      createFragmentNodes(vdom, parentEl, index, hostComponent);
+      break;
+    }
+
+    case DOM_TYPES.COMPONENT: {
+      createComponentNode(vdom, parentEl, index, hostComponent);
       break;
     }
 
@@ -96,4 +102,14 @@ function insert(el, parentEl, index) {
   } else {
     parentEl.insertBefore(el, children[index]);
   }
+}
+
+function createComponentNode(vdom, parentEl, index, hostComponent) {
+  const Component = vdom.tag;
+  const { props, events } = extractPropsAndEvents(vdom);
+  const component = new Component(props, events, hostComponent);
+
+  component.mount(parentEl, index);
+  vdom.component = component;
+  vdom.el = component.firstElement;
 }

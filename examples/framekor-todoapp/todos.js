@@ -1,148 +1,182 @@
-// import {h, createApp, hString, hFragment} from 'https://unpkg.com/framekor@1.0.2';
-import {h, createApp, hString, hFragment} from './framekor.js';
-// import {h, createApp, hString, hFragment} from '../../packages/runtime/src/app.js';
+import {
+  createApp,
+  defineComponent,
+  h,
+  hFragment,
+} from '../../packages/runtime/dist/framekor.js'
 
-const state = {
-	currentTodo: '',
-	edit: {
-		idx: null,
-		original: null,
-		edited: null
-	},
-	todos: ['Walk the dog', 'Water the plants']
-}
+const App = defineComponent({
+  state() {
+    return {
+      todos: [
+        { id: crypto.randomUUID(), text: 'Walk the dog' },
+        { id: crypto.randomUUID(), text: 'Water the plants' },
+        { id: crypto.randomUUID(), text: 'Sand the chairs' },
+      ],
+    }
+  },
 
-const reducers = {
-	'update-current-todo': (state, currentTodo) => (
-		{
-			...state,
-			currentTodo
-		}
-	),
-	'add-todo': (state) => (
-		{
-			...state,
-			currentTodo: '',
-			todos: [...state.todos, state.currentTodo]
-		}
-	),
-	'start-editing-todo': (state, idx) => (
-		{
-			...state,
-			edit: {
-				idx,
-				original: state.todos[idx],
-				edited: state.todos[idx]
-			}
-		}
-	),
-	'edit-todo': (state, edited) => (
-		{
-			...state,
-			edit: {
-				...state.edit,
-				edited
-			}
-		}
-	),
-	'save-edited-todo': (state) => (
-		{
-			...state,
-			todos: state.todos.map((todo, idx) => (
-				idx === state.edit.idx ? state.edit.edited : todo
-			)),
-			edit: {
-				idx: null,
-				original: null,
-				edited: null
-			}
-		}
-	),
-	'cancel-edit-todo': (state) => (
-		{
-			...state,
-			edit: {
-				idx: null,
-				original: null,
-				edited: null
-			}
-		}
-	),
-	'delete-todo': (state, idx) => (
-		{
-			...state,
-			todos: state.todos.filter((todo, i) => i !== idx)
-		}
-	)
-}
+  render() {
+    const { todos } = this.state
 
-function App(state, emit) {
-	return hFragment([
-		h('h1', {}, ['My TODOs']),
-		CreateTodo(state, emit),
-		TodoList(state, emit)
-	])
-}
+    return hFragment([
+      h('h1', {}, ['My TODOs']),
+      h(CreateTodo, {
+        on: {
+          add: this.addTodo,
+        },
+      }),
+      h(TodoList, {
+        todos,
+        on: {
+          remove: this.removeTodo,
+          edit: this.editTodo,
+        },
+      }),
+    ])
+  },
 
-function CreateTodo({currentTodo}, emit) {
-	return h('div', {}, [
-		h('label', { for: 'new-todo' }, ['New Todo:']),
-		h('input', {
-			type: 'text',
-			id: 'new-todo',
-			value: currentTodo,
-			on: {
-				input: ({target}) => emit('update-current-todo', target.value),
-				keydown: ({key}) => key === 'Enter' && currentTodo.length >= 3 && emit('add-todo')
-			}
-		}),
-		h('button', {
-			disabled: currentTodo.length < 3,
-			on: {click: () => emit('add-todo')}
-		}, ['Add'])
-	])
-}
+  addTodo(text) {
+    const todo = { id: crypto.randomUUID(), text }
+    this.updateState({ todos: [...this.state.todos, todo] })
+  },
 
-function TodoList({ todos, edit }, emit) {
-	return h(
-		'ul',
-		{},
-		todos.map((todo, i) => TodoItem({ todo, i, edit }, emit))
-	)
-}
+  removeTodo(idx) {
+    const newTodos = [...this.state.todos]
+    newTodos.splice(idx, 1)
+    this.updateState({ todos: newTodos })
+  },
 
-function TodoItem({todo, i, edit}, emit) {
-	const isEditing = edit.idx === i;
+  editTodo({ edited, i }) {
+    const newTodos = [...this.state.todos]
+    newTodos[i] = { ...newTodos[i], text: edited }
+    this.updateState({ todos: newTodos })
+  },
+})
 
-	return isEditing ? h('li', {}, [
-		h('input', {
-			value: edit.edited,
-			on: {
-				input: ({target}) => emit('edit-todo', target.value)
-			}
-		}),
-		h('button', {
-			on: {
-				click: () => emit('save-edited-todo')
-			}
-		}, ['Save']),
-		h('button', {
-			on: {
-				click: () => emit('cancel-edit-todo')
-			}
-		}, ['Cancel'])
-	]) : h('li', {}, [
-		h('span', {
-			on: {
-				dblclick: () => emit('start-editing-todo', i)
-			}
-		}, [todo]),
-		h('button', {
-			on: {
-				click: () => emit('delete-todo', i)
-			}
-		}, ['Done'])
-	])
-}
+const CreateTodo = defineComponent({
+  state() {
+    return { text: '' }
+  },
 
-createApp({ state, reducers, view: App }).mount(document.body);
+  render() {
+    const { text } = this.state
+
+    return h('div', {}, [
+      h('label', { for: 'todo-input' }, ['New TODO']),
+      h('input', {
+        type: 'text',
+        id: 'todo-input',
+        value: text,
+        on: {
+          input: ({ target }) => this.updateState({ text: target.value }),
+          keydown: ({ key }) => {
+            if (key === 'Enter' && text.length >= 3) {
+              this.addTodo()
+            }
+          },
+        },
+      }),
+      h(
+        'button',
+        {
+          disabled: text.length < 3,
+          on: { click: this.addTodo },
+        },
+        ['Add']
+      ),
+    ])
+  },
+
+  addTodo() {
+    this.emit('add', this.state.text)
+    this.updateState({ text: '' })
+  },
+})
+
+const TodoList = defineComponent({
+  render() {
+    const { todos } = this.props
+
+    return h(
+      'ul',
+      {},
+      todos.map((todo, i) =>
+        h(TodoItem, {
+          key: todo.id,
+          todo: todo.text,
+          i,
+          on: {
+            remove: (i) => this.emit('remove', i),
+            edit: ({ edited, i }) => this.emit('edit', { edited, i }),
+          },
+        })
+      )
+    )
+  },
+})
+
+const TodoItem = defineComponent({
+  state({ todo }) {
+    return {
+      original: todo,
+      edited: todo,
+      isEditing: false,
+    }
+  },
+
+  render() {
+    const { isEditing, original, edited } = this.state
+
+    return isEditing
+      ? this.renderInEditMode(edited)
+      : this.renderInViewMode(original)
+  },
+
+  renderInEditMode(edited) {
+    return h('li', {}, [
+      h('input', {
+        value: edited,
+        on: {
+          input: ({ target }) => this.updateState({ edited: target.value }),
+        },
+      }),
+      h(
+        'button',
+        {
+          on: {
+            click: this.saveEdition,
+          },
+        },
+        ['Save']
+      ),
+      h('button', { on: { click: this.cancelEdition } }, ['Cancel']),
+    ])
+  },
+
+  saveEdition() {
+    this.updateState({ original: this.state.edited, isEditing: false })
+    this.emit('edit', { edited: this.state.edited, i: this.props.i })
+  },
+
+  cancelEdition() {
+    this.updateState({ edited: this.state.original, isEditing: false })
+  },
+
+  renderInViewMode(original) {
+    return h('li', {}, [
+      h(
+        'span',
+        { on: { dblclick: () => this.updateState({ isEditing: true }) } },
+        [original]
+      ),
+      h(
+        'button',
+        { on: { click: () => this.emit('remove', this.props.i) } },
+        ['Done']
+      ),
+    ])
+  },
+})
+
+createApp(App).mount(document.body)
