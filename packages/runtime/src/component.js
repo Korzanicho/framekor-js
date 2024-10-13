@@ -7,7 +7,15 @@ import { mountDOM } from './mount-dom';
 import { patchDOM } from './patch-dom';
 import { hasOwnProperty } from './utils/objects';
 
-export function defineComponent({ render, state, ...methods }) {
+const emptyFn = () => {};
+
+export function defineComponent({
+	render,
+	state,
+	onMounted = emptyFn,
+	onUnmounted = emptyFn,
+	...methods
+}) {
 	class Component {
 		#vdom = null;
 		#hostEl = null;
@@ -49,6 +57,14 @@ export function defineComponent({ render, state, ...methods }) {
 			}
 
 			return 0;
+		}
+
+		onMounted() {
+			Promise.resolve(onMounted.call(this));
+		}
+
+		onUnmounted() {
+			Promise.resolve(onUnmounted.call(this));
 		}
 
 		updateProps(props) {

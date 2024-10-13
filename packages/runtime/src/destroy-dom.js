@@ -1,5 +1,6 @@
-import { removeEventListeners } from './events';
 import { DOM_TYPES } from './h';
+import { enqueueJob } from './sheduler';
+import { removeEventListeners } from './events';
 
 function removeTextNode(vdom) {
   const { el } = vdom;
@@ -48,6 +49,7 @@ export function destroyDOM(vdom) {
 
     case DOM_TYPES.COMPONENT: {
       vdom.component.unmount();
+      enqueueJob(() => vdom.component.onUnmounted());
       break;
     }
 

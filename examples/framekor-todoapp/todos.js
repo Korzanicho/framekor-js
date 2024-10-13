@@ -4,6 +4,7 @@ import {
   h,
   hFragment,
 } from '../../packages/runtime/dist/framekor.js'
+import { readTodos, writeTodos } from './todos-repository.js'
 
 const App = defineComponent({
   state() {
@@ -14,6 +15,10 @@ const App = defineComponent({
         { id: crypto.randomUUID(), text: 'Sand the chairs' },
       ],
     }
+  },
+
+  onMounted() {
+    this.updateState({ todos: readTodos() })
   },
 
   render() {
@@ -39,18 +44,21 @@ const App = defineComponent({
   addTodo(text) {
     const todo = { id: crypto.randomUUID(), text }
     this.updateState({ todos: [...this.state.todos, todo] })
+    writeTodos(this.state.todos)
   },
 
   removeTodo(idx) {
     const newTodos = [...this.state.todos]
     newTodos.splice(idx, 1)
     this.updateState({ todos: newTodos })
+    writeTodos(this.state.todos)
   },
 
   editTodo({ edited, i }) {
     const newTodos = [...this.state.todos]
     newTodos[i] = { ...newTodos[i], text: edited }
     this.updateState({ todos: newTodos })
+    writeTodos(this.state.todos)
   },
 })
 

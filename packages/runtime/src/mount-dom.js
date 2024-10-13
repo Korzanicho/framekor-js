@@ -1,5 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { DOM_TYPES } from './h';
+import { enqueueJob } from './sheduler';
 import { setAttributes } from './attributes';
 import { addEventListeners } from './events';
 import { extractPropsAndEvents } from './utils/props';
@@ -75,6 +76,7 @@ export function mountDOM(vdom, parentEl, index, hostComponent = null) {
 
     case DOM_TYPES.COMPONENT: {
       createComponentNode(vdom, parentEl, index, hostComponent);
+      enqueueJob(() => vdom.component.onMounted());
       break;
     }
 

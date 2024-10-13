@@ -168,6 +168,32 @@ function extractChildren(vdom) {
   return children;
 }
 
+let isSheduled = false;
+const jobs = [];
+function enqueueJob(job) {
+	jobs.push(job);
+	sheduleUpdate();
+}
+function sheduleUpdate() {
+	if (isSheduled) return;
+	isSheduled = true;
+	queueMicrotask(processJobs);
+}
+function processJobs() {
+	while (jobs.length > 0) {
+		const job = jobs.shift();
+		const result = job();
+		Promise.resolve(result).then(
+			() => {
+			},
+			(err) => {
+				console.error(`[scheduler]: ${err}`);
+			}
+		);
+	}
+	isSheduled = false;
+}
+
 function setClass(el, className) {
   el.className = '';
   if (typeof className === 'string') el.className = className;
@@ -282,6 +308,7 @@ function mountDOM(vdom, parentEl, index, hostComponent = null) {
     }
     case DOM_TYPES.COMPONENT: {
       createComponentNode(vdom, parentEl, index, hostComponent);
+      enqueueJob(() => vdom.component.onMounted());
       break;
     }
     default: {
@@ -347,6 +374,7 @@ function destroyDOM(vdom) {
     }
     case DOM_TYPES.COMPONENT: {
       vdom.component.unmount();
+      enqueueJob(() => vdom.component.onUnmounted());
       break;
     }
     default: {
@@ -649,7 +677,14 @@ function patchEvents(el, oldListeners = {}, oldEvents = {}, newEvents = {}, host
 	return addedListeners;
 }
 
-function defineComponent({ render, state, ...methods }) {
+const emptyFn = () => {};
+function defineComponent({
+	render,
+	state,
+	onMounted = emptyFn,
+	onUnmounted = emptyFn,
+	...methods
+}) {
 	class Component {
 		#vdom = null;
 		#hostEl = null;
@@ -684,6 +719,12 @@ function defineComponent({ render, state, ...methods }) {
 				return Array.from(this.#hostEl.children).indexOf(this.firstElement);
 			}
 			return 0;
+		}
+		onMounted() {
+			Promise.resolve(onMounted.call(this));
+		}
+		onUnmounted() {
+			Promise.resolve(onUnmounted.call(this));
 		}
 		updateProps(props) {
 			const newProps = { ...this.props, ...props };
