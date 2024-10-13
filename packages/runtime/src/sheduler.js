@@ -6,6 +6,15 @@ export function enqueueJob(job) {
 	sheduleUpdate();
 }
 
+export function nextTick() {
+	sheduleUpdate();
+	return flushPromises();
+}
+
+function flushPromises() {
+	return new Promise((resolve) => setTimeout(resolve));
+}
+
 function sheduleUpdate() {
 	if (isSheduled) return;
 
