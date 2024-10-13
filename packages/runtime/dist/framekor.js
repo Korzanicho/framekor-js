@@ -168,15 +168,22 @@ function extractChildren(vdom) {
   return children;
 }
 
-let isSheduled = false;
+let isScheduled = false;
 const jobs = [];
 function enqueueJob(job) {
 	jobs.push(job);
-	sheduleUpdate();
+	scheduleUpdate();
 }
-function sheduleUpdate() {
-	if (isSheduled) return;
-	isSheduled = true;
+function nextTick() {
+	scheduleUpdate();
+	return flushPromises();
+}
+function flushPromises() {
+	return new Promise((resolve) => setTimeout(resolve));
+}
+function scheduleUpdate() {
+	if (isScheduled) return;
+	isScheduled = true;
 	queueMicrotask(processJobs);
 }
 function processJobs() {
@@ -191,7 +198,7 @@ function processJobs() {
 			}
 		);
 	}
-	isSheduled = false;
+	isScheduled = false;
 }
 
 function setClass(el, className) {
@@ -799,4 +806,4 @@ function defineComponent({
 	return Component;
 }
 
-export { createApp, defineComponent, h, hFragment, hString };
+export { createApp, defineComponent, h, hFragment, hString, nextTick };

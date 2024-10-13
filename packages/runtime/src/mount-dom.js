@@ -1,6 +1,6 @@
 /* eslint-disable no-use-before-define */
 import { DOM_TYPES } from './h';
-import { enqueueJob } from './sheduler';
+import { enqueueJob } from './scheduler';
 import { setAttributes } from './attributes';
 import { addEventListeners } from './events';
 import { extractPropsAndEvents } from './utils/props';

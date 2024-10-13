@@ -1,13 +1,13 @@
-let isSheduled = false;
+let isScheduled = false;
 const jobs = [];
 
 export function enqueueJob(job) {
 	jobs.push(job);
-	sheduleUpdate();
+	scheduleUpdate();
 }
 
 export function nextTick() {
-	sheduleUpdate();
+	scheduleUpdate();
 	return flushPromises();
 }
 
@@ -15,10 +15,10 @@ function flushPromises() {
 	return new Promise((resolve) => setTimeout(resolve));
 }
 
-function sheduleUpdate() {
-	if (isSheduled) return;
+function scheduleUpdate() {
+	if (isScheduled) return;
 
-	isSheduled = true;
+	isScheduled = true;
 	queueMicrotask(processJobs);
 }
 
@@ -37,5 +37,5 @@ function processJobs() {
 		)
 	}
 
-	isSheduled = false;
+	isScheduled = false;
 }

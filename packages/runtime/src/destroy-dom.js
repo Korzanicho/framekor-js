@@ -1,5 +1,5 @@
 import { DOM_TYPES } from './h';
-import { enqueueJob } from './sheduler';
+import { enqueueJob } from './scheduler';
 import { removeEventListeners } from './events';
 
 function removeTextNode(vdom) {
